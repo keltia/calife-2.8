@@ -479,9 +479,8 @@ main(argc, argv)
             fclose (logfile);
         }
 #endif /* NO_SYSLOG */
-        fprintf (stderr, "Unknown user %s.\n", user_to_be);
-        fflush (stderr);
-        exit (8);
+        die (8, "Unknown user %s.\n", user_to_be);
+        /* NOT REACHED */
     }
     /*
      * test if user already root 
@@ -763,7 +762,7 @@ main(argc, argv)
             fclose (logfile);
         }
 #endif /* NO_SYSLOG */
-        fprintf (stderr, "Calife failed. Sorry.\n");
+        fprintf (stderr, "Calife failed. Sorry, trying to run su.\n");
         fflush (stderr);
         /*
          * give the baby to su
@@ -780,6 +779,8 @@ main(argc, argv)
  ** Parametres :    shell   char *       shell a executer
  **
  ** Retourne :      n'est pas sense revenir...
+ **
+ ** Privileges :    aucun
  **/
 
 #ifdef STDC_HEADERS
@@ -791,12 +792,26 @@ exec_shell (shell_name)
 char * shell_name;
 #endif /* STDC_HEADERS */
 {
-    char    * shell_arg0;
-    
-    MESSAGE_2 ("standard_shell = |%s| basename = |%s|\n", 
-               shell_name, basename (shell_name));
+    int         fd;
+    char        * shell_arg0;
+    struct stat sb;   
+     
+    MESSAGE_2 ("standard_shell = |%100s| basename = |%100s|\n", 
+                shell_name, basename (shell_name));
+ 
+    fd = open (shell_name, O_RDONLY);
+    if (fd == -1)
+        die (3, "Shell not executable/not found\n");
 
-    if (!access (shell_name, R_OK | X_OK))
+    err = fstat (fd, &sb);
+    if (err)
+        die (3, "Can't fstat()\n");
+    
+    close (fd);
+    /*
+     * If we can execute it, do it
+     */
+    if (sb.st_mode & (S_IXUSR|S_IXGRP|S_IXOTH)) 
     {
 #ifdef HAVE_RLIMIT
         setrlimit (RLIMIT_CORE, &orlp);     /* restore old limit */
@@ -804,8 +819,8 @@ char * shell_name;
 #ifdef NO_SETUID_SHELL
         char * cmdline = (char *) xalloc (MAX_STRING);
             
-        strcpy (cmdline, "exec ");
-        strcat (cmdline, shell_name);
+        snprintf (cmdline, "exec %100s", shell_name);
+
         if (!strcmp (basename (shell_name), "tcsh"))
         {
             execl ("/bin/sh", "sh", "-c", cmdline, 0);

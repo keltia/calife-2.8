@@ -48,11 +48,14 @@ open_databases ()
      */
     GET_ROOT;
 
+	/* FIXME: don't use access(2) */
     if (access (AUTH_CONFIG_FILE, 0))
     {
 #ifndef NO_SYSLOG
         syslog (LOG_AUTH | LOG_ERR, "No database in `%s', launching su...\n", AUTH_CONFIG_FILE);
 #endif /* NO_SYSLOG */
+		fprintf (stderr, "No database in `%s'...\n",
+          	     AUTH_CONFIG_FILE);                              
         return 1;        
     }
     else
@@ -438,6 +441,14 @@ verify_password (name, user_to_be, this_time, tty)
             strncpy (user_pass, pt_pass, l_size);
             user_pass[l_size - 1] = '\0';
             pt_enc = (char *) crypt (user_pass, calife->pw_passwd);
+            /*
+             * Wipe out the cleartext password
+             */
+            memset (user_pass, '\0', l_size);
+
+            /*
+             * Move from the static buffer intoa safe location of our own
+             */
             memset (enc_pass, '\0', l_size);
             strcpy (enc_pass, pt_enc);
             /*
