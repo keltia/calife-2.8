@@ -15,7 +15,7 @@
 #include "conf.h"
 
 #ifndef lint
-static char * rcsid = "$Id: //depot/security/calife/main/db.c#25 $";
+static char * rcsid = "$Id: //depot/security/calife/main/db.c#26 $";
 #endif /* lint */
 
 /** On cherche et ouvre la database locale.
@@ -51,9 +51,7 @@ open_databases ()
 	/* FIXME: don't use access(2) */
     if (access (AUTH_CONFIG_FILE, 0))
     {
-#ifndef NO_SYSLOG
         syslog (LOG_AUTH | LOG_ERR, "No database in `%s', launching su...\n", AUTH_CONFIG_FILE);
-#endif /* NO_SYSLOG */
 		fprintf (stderr, "No database in `%s'...\n",
           	     AUTH_CONFIG_FILE);                              
         return 1;        
@@ -63,12 +61,6 @@ open_databases ()
         /*
          * open log file
          */
-#ifdef NO_SYSLOG
-        if (!(logfile = fopen (ADMIN_LOG, "a+")))
-            fprintf (stderr, "Can't open file `%s' errno=`%d'", ADMIN_LOG, errno);
-        else
-            fchmod (fileno (logfile), 0600);
-#endif /* NO_SYSLOG */
                                 /* open protected database */
         fp = fopen (AUTH_CONFIG_FILE, "r");
         if (fp == NULL)
@@ -89,6 +81,7 @@ open_databases ()
  ** Line format is :
  **
  ** login[:][shell][:user1,user2,user3,...]
+ ** @group[:][shell][:user1,user2,...]
  **
  ** Parametres :    name        char *  nom de l'utilisateur
  **                 user_to_be  char *  futur nom d'utilisateur
@@ -112,6 +105,8 @@ verify_auth_info (name, user_to_be)
     int     nb_users = 0;
     char    * line, * ptr;
     char    * line_name, * line_shell;
+    char    * group_name = NULL, *group, **p;
+    struct group *gr_group;
     
     /*
      * let's search if user allowed or not
@@ -143,6 +138,37 @@ verify_auth_info (name, user_to_be)
         MESSAGE_1 ("Line read = |%s|\n", line);
         line_name = line;
         /*
+         * Look for a @ as first character (for groups)
+         */
+        if (*line == '@')
+        {
+            group = strdup(line);
+            group_name = strtok(group, ":");
+            group_name++;           /* skip '@' */
+            /*
+             *  Look into /etc/groups (or its equivalent with get)
+             */
+             gr_group = (struct group *) getgrnam(group_name);
+             if (gr_group == NULL)
+             {
+                 die(1, "No such group %s", group_name);
+                 allowed = 0;
+                 goto end;
+             }
+             for ( p = &gr_group->gr_mem[0]; *p ; p++ )
+             {
+                 MESSAGE_3 ("matching %s to %s in %s", name, *p, group_name);  
+                 if (strcmp(name, *p) == 0)
+                 {
+                     MESSAGE_2 ("User %s Allowed through group %s\n", name, group_name);
+                     _group = strdup (group_name);
+                     strcpy (_group, group_name);
+                     allowed = 2;
+                     break;
+                 }
+             }
+        }
+        /*
          * Look for first ':'
          */
         ptr = strchr (line, ':');
@@ -152,6 +178,12 @@ verify_auth_info (name, user_to_be)
              * No shell and no user list
              */
             custom_shell = 0;
+            
+            /*
+             * Bypass if already allowed through group
+             */
+            if (group_name != NULL && allowed == 1)
+                goto escape;
             if (strcmp (line_name, name))   /* not us */
                 continue;
             goto escape;            
@@ -168,6 +200,11 @@ verify_auth_info (name, user_to_be)
 
         MESSAGE_2 ("Current line_name = |%s| / name = |%s|\n", line_name,name);
 
+        /*
+         * Bypass if already allowed through group
+         */
+        if (group_name != NULL && allowed != 0)
+            goto end;
         if (strcmp (line_name, name))   /* not us */
             continue;
 
@@ -305,9 +342,14 @@ escape:
     }
 end:
     free (line);
+    if (group)
+        free(group);
     if (user_list)
         free (user_list);
     fclose (fp);
+    if (geteuid() == 0)
+        allowed = 1;
+    MESSAGE_1 ("Exit from verify_auth_info with allowed=%d\n", allowed);
     return allowed;    
 }
 
@@ -368,18 +410,8 @@ verify_password (name, user_to_be, this_time, tty)
     if ((*(calife->pw_passwd)) == '\0' || (*(calife->pw_passwd)) == '*')
     {
 
-#ifndef NO_SYSLOG
         syslog (LOG_AUTH | LOG_ERR, "NULL CALIFE %s to %s on %s", name, user_to_be, tty);
         closelog ();
-#else /* NO_SYSLOG */        
-        if (logfile)
-        {
-            fprintf (logfile, "USER=%-9sTTY=%s\tDATE=%s NAME=%s << NULL PASSWORD >>\n",
-                name, tty, this_time, user_to_be);
-            fflush (logfile);
-            fclose (logfile);
-        }
-#endif /* NO_SYSLOG */
         die (10, "Sorry.\n");
     }
 #ifndef RELAXED
@@ -463,18 +495,8 @@ verify_password (name, user_to_be, this_time, tty)
 
         if (!got_pass)
         {
-#ifndef NO_SYSLOG
             syslog (LOG_AUTH | LOG_ERR, "BAD CALIFE %s to %s on %s", name, user_to_be, tty);
             closelog ();
-#else /* NO_SYSLOG */
-            if (logfile)
-            {
-                fprintf (logfile, "USER=%-9sTTY=%s\tDATE=%s NAME=%s << BAD PASSWORD >>\n",
-                         name, tty, this_time, user_to_be);
-                fflush (logfile);
-                fclose (logfile);
-            }
-#endif /* NO_SYSLOG */
             fprintf (stderr, "Sorry.\n");
             exit (9);
         }

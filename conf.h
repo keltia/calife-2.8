@@ -4,7 +4,7 @@
  **
  ** cree pour simplifier calife.c
  **
- ** Copyright (c) 1991-1995 par O. ROBERT
+ ** Copyright (c) 1991-2004 par O. ROBERT
  **
  ** $Id: //depot/security/calife/main/conf.h#29 $
  **/
@@ -146,6 +146,7 @@ extern  FILE    * fp, * logfile;/* fichier d'auth. et log */
 extern  int     custom_shell;   /* modification du shell ? */
 extern  char    * shell;        /* nom du shell */
 extern  uid_t   ssid;   		/* POSIX saved uid */
+extern  char    * _group;       /* Si user E group */
 #endif /* !MAIN_MODULE */
 
 extern  int errno;
@@ -157,10 +158,13 @@ extern  int errno;
                        fflush (stderr)
 #define MESSAGE_2(x,y,z) fprintf (stderr, (x), (y), (z)); \
                          fflush (stderr)
+#define MESSAGE_3(x,y,z,t) fprintf (stderr, (x), (y), (z), (t)); \
+                           fflush (stderr)
 #else
 #define MESSAGE(x)
 #define MESSAGE_1(x,y)
 #define MESSAGE_2(x,y,z)
+#define MESSAGE_3(x,y,z,t)
 #endif /* DEBUG */
 
 #ifdef NO_SYSLOG

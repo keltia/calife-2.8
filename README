@@ -166,23 +166,33 @@ Calife a   été  testé et  développé   sur les systèmes UNIX   suivants (les
 versions testées peuvent être anciennes et devraient être retestées mais je
 n'ai plus accès à pas mal de ces machines...) :
 
-- FreeBSD 1-5.x   (mach. de développement de l'auteur)
-- MacOS X 10.*/Jaguar & Panther (nouveau)
+- FreeBSD 1 - 6.x   (mach. de développement de l'auteur)
+- MacOS X 10.*/Jaguar (nouveau)
 - Linux 0.99+ et 1.* (1.2.* et 1.3.*), 2.*
+- Solaris 2.x (et la plupart des SVR4)
 - HP-UX 8.*, 9.*, 10.* et 11.*
+
+Systèmes pour lesquels la compatibilité n'est pas testée directement par l'auteur.
+
 - SunOS 4.1.*
 - SunOS 3.2
-- Solaris 2.x (et la plupart des SVR4)
 - NeXTStep 3
 - SCO 3.2
+- HP-UX 8.* et 9.*
 - SVR4 NeWSOS 5.02
 - Encore Gould NP1
 - AIX 3.x & 4.x
 - IRIX 5.x (probablement 6.x aussi)
 - GNU Hurd (nouveau)
 
+MacOS 10.3 (Panther) n'est pour l'instant pas supporté, la gestion des mots de passe
+ayant changé par rapport à Jaguar.
+
 Le support de  NIS a disparu dans les  versions 2.6.5 et suivantes mais sera
 réintégré sous peu.
+
+La fonctionnalité syslog(3) est maintenant obligatoire pour compiler calife. Ca simplifie
+le code manière significative.
 
 Des packages FreeBSD et Debian existent dorénavant grâce à Thomas Quinot.
 Alain Thivillon a généré des packages Red-hat (RPM) pour 2.8.4b.

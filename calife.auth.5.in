@@ -5,7 +5,7 @@
 .\" modification, are permitted under the GNU General Public Licence.
 .\" Look into the COPYING file.
 .\"
-.\"	@(#) $Id: //depot/security/calife/main/calife.auth.5.in#3 $
+.\"	@(#) $Id: //depot/security/calife/main/calife.auth.5.in#4 $
 .\""
 .Dd September 25, 1994
 .Dt CALIFE.AUTH 5
@@ -22,7 +22,8 @@ follows:
 .Pp
 .Bl -tag -width shell -offset indent
 .It Ar name
-User's login name.
+User's login name /
+.Ar @group .
 .It Ar shell
 User's shell
 .It Ar user1,user2,...,usern
@@ -39,6 +40,13 @@ of the name, as this tends to confuse mailers.  No field may contain a
 colon (``:'') as this has been used historically to separate the fields
 in the user database.
 .Pp
+One alternative syntax is to use
+.Ar @group
+to specify that any user in the given
+.Ar group
+is allowed to use
+.Nm calife
+to become root.
 .Pp
 The
 .Ar shell

@@ -92,15 +92,7 @@ die (int err, const char * fmt, ...)
 
     fflush (stdout);
 
-#ifndef NO_SYSLOG
     closelog ();
-#else
-    if (logfile != NULL)
-    {
-        fflush(logfile);
-        fclose(logfile);
-    }
-#endif
     va_start (ap, fmt);
     vfprintf (stderr, fmt, ap);
     va_end (ap);
@@ -117,15 +109,7 @@ die (int err, const char * fmt, ...)
 
     fflush (stdout);
 
-#ifndef NO_SYSLOG
     closelog ();
-#else
-    if (logfile != NULL)
-    {
-        fflush(logfile);
-        fclose(logfile);
-    }
-#endif
     va_start (ap);
     vfprintf (stderr, fmt, ap);
     va_end (ap);

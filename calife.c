@@ -172,6 +172,9 @@
  **                   déficiences de getlogin(3).
  **                 * Contourne un bug de getpass(3) sur Linux/glibc.
  **                 * /etc/calife.out devient optionnel.
+ **                 * il est possible de spécifier un group dans calife.auth
+ **                   via @group:...
+ **                 * syslog(3) est maintenant requis.
  **/
 
 #define MAIN_MODULE
@@ -182,7 +185,7 @@
 #include "conf.h"
 
 #ifndef lint
-static char * rcsid = "$Id: //depot/security/calife/main/calife.c#44 $";
+static char * rcsid = "$Id: //depot/security/calife/main/calife.c#45 $";
 #endif /* lint */
 
 FILE    * fp = NULL, * logfile = NULL;  /* fichier d'auth. et log */
@@ -190,6 +193,7 @@ int     custom_shell= 0;            /* modification du shell ? */
 char    * shell;                    /* nom du shell */
 uid_t   ssid;   					/* saved uid -- POSIX */
 int     want_login = 0;             /* like 'su -' or not */
+char    * _group;                   /* if auth. through group */
 
 #ifdef HAVE_RLIMIT
 static struct rlimit rlp, orlp;
@@ -225,9 +229,11 @@ main(argc, argv)
 
     RELEASE_ROOT;
 
+#ifndef DEBUG 
     if (ssid != 0)                /* ... not setuid, exit */
         exit (11);
-    
+#endif
+
                         /* displays compilation options */
 #ifdef DEBUG
 #ifdef STDC_HEADERS
@@ -243,9 +249,6 @@ main(argc, argv)
 #endif /* STDC_HEADERS */
     fprintf (stderr, "Options : ");
     fprintf (stderr, "custom_shell, ");
-#ifdef NO_SYSLOG
-    fprintf (stderr, "no_syslog, ");
-#endif /* NO_SYSLOG */
 #ifdef NO_SETUID_SHELL 
     fprintf (stderr, "no_setuid_shell, ");
 #endif /* NO_SETUID_SHELL */
@@ -456,29 +459,18 @@ main(argc, argv)
     /*
      * open syslod log file
      */
-#ifndef NO_SYSLOG
 #ifndef RELAXED
     openlog ("calife+", LOG_PID | LOG_CONS, LOG_AUTH);
 #else /* RELAXED */
     openlog ("calife", LOG_PID | LOG_CONS, LOG_AUTH);
 #endif /* RELAXED */
-#endif /* NO_SYSLOG */
     /*
      * does the user we want to become exist or not ? 
      */
     test_user = getpwnam (user_to_be);
     if (test_user == NULL)
     {
-#ifndef NO_SYSLOG
         syslog (LOG_AUTH | LOG_ERR, "BAD CALIFE %s to unknown %s on %s", name, user_to_be, tty);
-#else /* NO_SYSLOG */
-        if (logfile)
-        {
-            fprintf (logfile, "USER=%-9sTTY=%s DATE=%s UNKNOWN NAME=%s <<NO ACCESS>>", name, tty, this_time, user_to_be);
-            fflush (logfile);
-            fclose (logfile);
-        }
-#endif /* NO_SYSLOG */
         die (8, "Unknown user %s.\n", user_to_be);
         /* NOT REACHED */
     }
@@ -546,10 +538,8 @@ main(argc, argv)
                     die (1, "Bad pw data errno = %d", errno);
 
                 memcpy (calife, p_calife, sizeof (struct passwd));
-#ifndef NO_SYSLOG
                 if (logfile)
                     fclose (logfile);
-#endif /* !NO_SYSLOG */                
                 {
                     unsigned int e1, e2;
 
@@ -595,19 +585,11 @@ main(argc, argv)
                 free (calife);
                 free (wanted_user);
 
-#ifndef NO_SYSLOG
-                syslog (LOG_AUTH | LOG_NOTICE, "%s to %s on %s - BEGIN", name, user_to_be, tty);
-#else /* NO_SYSLOG */   
-                /*
-                 * we write the log file
-                 */             
-                if (logfile)
-                {
-                    fprintf (logfile, "USER=%-9sTTY=%s DATE=%s NAME=%s\n", name, tty, this_time, user_to_be);
-                    fflush (logfile);
-                    fclose (logfile);
-                }
-#endif /* NO_SYSLOG */
+                if (allowed == 2)
+                    syslog (LOG_AUTH | LOG_NOTICE, "%s@%s to %s on %s - BEGIN", 
+                            name, _group, user_to_be, tty);
+                else
+                    syslog (LOG_AUTH | LOG_NOTICE, "%s to %s on %s - BEGIN", name, user_to_be, tty);
                 wait (&status);
 
                 RELEASE_ROOT;
@@ -630,9 +612,7 @@ main(argc, argv)
                     err = fstat (fd, &sb1);
                     if (err)
                     {
-#ifndef NO_SYSLOG
                         syslog (LOG_AUTH | LOG_NOTICE, "fstat: %s unreadable/executable", out_rc);
-#endif /* NO_SYSLOG */
                         goto done;
                     }
                     /*
@@ -641,9 +621,7 @@ main(argc, argv)
                     err = lstat (out_rc, &sb2);
                     if (err)
                     {
-#ifndef NO_SYSLOG
                         syslog (LOG_AUTH | LOG_NOTICE, "lstat: %s unreadable/executable", out_rc);
-#endif /* NO_SYSLOG */
                         goto done;
                     }
                     /*
@@ -652,9 +630,7 @@ main(argc, argv)
                     if (sb1.st_dev != sb2.st_dev ||
                         sb1.st_ino != sb2.st_ino)
                     {
-#ifndef NO_SYSLOG
                         syslog (LOG_AUTH | LOG_NOTICE, "lstat: %s IS A SYMLINK !!", out_rc);
-#endif /* NO_SYSLOG */
                         goto done;
                     }
                     /*
@@ -662,9 +638,7 @@ main(argc, argv)
                      */
                     if ((sb1.st_mode & S_IRWXO) == S_IRWXO)
                     {
-#ifndef NO_SYSLOG
                         syslog (LOG_AUTH | LOG_NOTICE, "fstat: %s IS WORLD WRITABLE !!", out_rc);
-#endif /* NO_SYSLOG */
                         goto done;
                     }
                     /*
@@ -712,10 +686,12 @@ main(argc, argv)
                 }
                 done:                    
 #endif /* WANT_GLOBAL_RC */
-#ifndef NO_SYSLOG
-                syslog (LOG_AUTH | LOG_NOTICE, "%s to %s on %s - END.", name, user_to_be, tty);
+                if (allowed == 2)
+                    syslog (LOG_AUTH | LOG_NOTICE, "%s@%s to %s on %s - END.", 
+                            name, _group, user_to_be, tty);
+                else
+                    syslog (LOG_AUTH | LOG_NOTICE, "%s to %s on %s - END.", name, user_to_be, tty);
                 closelog ();
-#endif /* NO_SYSLOG */
                 /*
                  * cleanup
                  */
@@ -749,19 +725,9 @@ main(argc, argv)
     /*
      * su will ask for the password, if any
      */
-#ifndef NO_SYSLOG
         syslog (LOG_AUTH | LOG_ERR, "BAD CALIFE %s to %s on %s",
                 name, user_to_be, tty);
         closelog ();
-#else /* NO_SYSLOG */
-        if (logfile)
-        {
-            fprintf (logfile, "USER=%-9sTTY=%s\tDATE=%s NAME=%s << ACCESS DENIED >>\n",
-                name, tty, this_time, user_to_be);
-            fflush (logfile);
-            fclose (logfile);
-        }
-#endif /* NO_SYSLOG */
         fprintf (stderr, "Calife failed. Sorry, trying to run su.\n");
         fflush (stderr);
         /*
@@ -792,7 +758,7 @@ exec_shell (shell_name)
 char * shell_name;
 #endif /* STDC_HEADERS */
 {
-    int         fd;
+    int         fd, err;
     char        * shell_arg0;
     struct stat sb;   
      
