@@ -54,8 +54,19 @@ Le site primaire pour Calife est <ftp://mutt.frmug.org/pub/calife/>. Un
 miroir existe sur <ftp://postfix.EU.org/pub/calife/>. La dernière version
 est toujours disponible sous le nom latest.tar.gz.
 
-Calife sera bientôt disponible sous la forme d'une archive Arch ce qui
-facilitera l'usage et la mise à jour par des contributeurs externes.
+Calife est disponible sous la forme d'une archive Arch ce qui facilitera
+l'usage et la mise à jour par des contributeurs externes.
+
+roberto@eu.org--2003b
+	http://archives.keltia.net/{archives}/roberto@eu.org--2003b
+
+calife--main--2.8	est la branche principale de développemet.
+
+Arch/TLA: <http://gnuarch.org/>
+
+Je conseille vivement la vesion de développement (postérieure à la 1.1pre5
+actuellement disponible). Voir <http://regexps.srparish.net/www/> pour plus
+de détails.
 
 ____________
 Installation
