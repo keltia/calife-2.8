@@ -422,8 +422,21 @@ verify_password (name, user_to_be, this_time, tty)
         for ( i = 0; i < 3; i ++ )
         {
             pt_pass = (char *) getpass ("Password:");
+            /* 
+             * XXX don't assume getpass(3) will check the buffer
+             * length. Linux glibc apparently lacks such checking and
+             * will happily segfault if the previous entered password
+             * was too big.
+             * cf. <URL:http://www.securityfocus.com/archive/1/355510>
+             */
+            if (pt_pass == NULL)
+                die(1, "Corrupted or too long password");
             memset (user_pass, '\0', l_size);
-            strcpy (user_pass, pt_pass);
+            /*
+             * Be a bit more careful there
+             */
+            strncpy (user_pass, pt_pass, l_size);
+            user_pass[l_size - 1] = '\0';
             pt_enc = (char *) crypt (user_pass, calife->pw_passwd);
             memset (enc_pass, '\0', l_size);
             strcpy (enc_pass, pt_enc);

@@ -168,6 +168,9 @@
  **                   Thomas Quinot.
  **                 * Utilise utmp aussi sous Linux et amélioration du
  **                   traitement.
+ **                 * Utilise un code analogue à su(8) pour pallier aux
+ **                   déficiences de getlogin(3).
+ **                 * Contourne un bug de getpass(3) sur Linux/glibc.
  **/
 
 #define MAIN_MODULE

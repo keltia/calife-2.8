@@ -1,3 +1,17 @@
+2004-02-27  Ollivier Robert  <roberto@keltia.freenix.fr>
+
+	* 2.8.6.
+
+	** SECURITY RELEASE **
+
+	* db.c(verify_password): vérification de la valeur de retour de
+	getpass(3) et utilisation de strncpy(3) pour recopier le mot de
+	passe saisi, sur Linux le buffer géré par la glibc est corruptible
+	et génère un segfault si le mot de passe précédemment entré est
+	trop long.
+
+	cf. <URL:http://www.securityfocus.com/archive/1/355510>
+
 2004-01-23  Ollivier Robert  <roberto@keltia.freenix.fr>
 
 	* 2.8.5-p3.
