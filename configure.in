@@ -37,6 +37,9 @@ case "$host" in
   *-sun-solaris*)
     os_solaris=yes
     ;;
+  *-apple-darwin*)
+    os_darwin=yes
+    ;;
   *-dec-ultrix*)
     AC_TRY_COMPILE([#include <syslog.h>],
                    [int foo = LOG_DAEMON; ],
@@ -247,12 +250,13 @@ AC_ARG_WITH(program,
 )
 
 if test -n "$GCC"; then
-AC_MSG_CHECKING(if the shell should be linked dynamically)
+AC_MSG_CHECKING(if the command should be linked dynamically)
 AC_ARG_ENABLE(dynamic,
 [  --enable-dynamic        Build the program dynamically (default static)],
 [ case "$withval" in       
   no)
-    if test x$os_solaris = xyes -o x$os_hpux = xyes ; then
+    if test x$os_solaris = xyes -o x$os_hpux = xyes -o \
+            x$os_darwin = xyes ; then
       ac_msg='it will not work on HP-UX & Solaris, linking dynamically.'
       AC_MSG_WARN($ac_msg)
       AC_MSG_RESULT(yes)

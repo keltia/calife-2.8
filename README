@@ -123,6 +123,9 @@ Quelques options spéciales sont disponibles  :
         instances de calife mais aussi de ne pas être dépendant de la
         version de la bibliothèque standard.
 
+        Parmi les systèmes devant utiliser --enable-dynamic, on compte
+        Solaris 2.x, HP-UX et MacOS X/Darwin.
+
 Cas de Linux :
 
 Ce système utilise     plusieurs systèmes de  "shadow passwords".    Il est
