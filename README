@@ -99,6 +99,7 @@ Quelques options spéciales sont disponibles  :
   --enable-debug=yes|no     Set the debugging mode (default is no)
   --enable-shellhack=yes|no (default is no)
   --enable-dynamic          Build the program dynamically (default static)
+  --enable-global-rc		Add /etc/calife.out support.
 
 
 --with-etcdir=CHEMIN
@@ -124,7 +125,7 @@ Quelques options spéciales sont disponibles  :
         version de la bibliothèque standard.
 
         Parmi les systèmes devant utiliser --enable-dynamic, on compte
-        Solaris 2.x, HP-UX et MacOS X/Darwin.
+        Solaris 2.x, HP-UX, Linux et MacOS X/Darwin.
 
 Cas de Linux :
 
@@ -155,7 +156,8 @@ apprendre davantage.
 
 Le programme essaie de lancer le fichier  calife.out (par défaut dans /etc)
 à la sortie de "calife". Ceci permet par exemple d'envoyer un mail à chaque
-utilisation de calife.
+utilisation de calife. Cette possibilité est optionnelle et dépend de
+l'option « --enable-global-rc ».
 
 _____________
 Compatibilité

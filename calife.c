@@ -171,6 +171,7 @@
  **                 * Utilise un code analogue à su(8) pour pallier aux
  **                   déficiences de getlogin(3).
  **                 * Contourne un bug de getpass(3) sur Linux/glibc.
+ **                 * /etc/calife.out devient optionnel.
  **/
 
 #define MAIN_MODULE
@@ -206,7 +207,10 @@ main(argc, argv)
 {
     int             allowed = 0;        /* l'utilisateur est-il valide ? */
     char            * name, * user_to_be, * tty, this_time [30];
-    char            * out_rc, * login;
+    char            * login;
+#ifdef WANT_GLOBAL_RC
+    char            * out_rc;
+#endif
     char            * uargv;
     uid_t           uid;
     time_t          t;
@@ -247,6 +251,9 @@ main(argc, argv)
 #endif /* NO_SETUID_SHELL */
 #ifdef RELAXED
     fprintf (stderr, "relaxed_mode, ");
+#ifdef WANT_GLOBAL_RC
+    fprintf(stderr, "global_rc, ");
+#endif /* WANT_GLOBAL_RC */
 #endif /* RELAXED */
     fprintf (stderr, "su_like, ");
     fprintf (stderr, "debug\n");
@@ -606,6 +613,7 @@ main(argc, argv)
 
                 RELEASE_ROOT;
 
+#ifdef WANT_GLOBAL_RC
                 out_rc = (char *) xalloc (strlen (CALIFE_OUT_FILE) + 1);
                 strcpy (out_rc, CALIFE_OUT_FILE);
 
@@ -704,6 +712,7 @@ main(argc, argv)
                         fprintf (stderr, "\a%s not executable/readable.\n", out_rc);
                 }
                 done:                    
+#endif /* WANT_GLOBAL_RC */
 #ifndef NO_SYSLOG
                 syslog (LOG_AUTH | LOG_NOTICE, "%s to %s on %s - END.", name, user_to_be, tty);
                 closelog ();
@@ -711,7 +720,9 @@ main(argc, argv)
                 /*
                  * cleanup
                  */
+#ifdef WANT_GLOBAL_RC
                 free (out_rc);
+#endif /* WANT_GLOBAL_RC */
 #ifdef DEBUG
                 if (WIFEXITED (status))
                 {

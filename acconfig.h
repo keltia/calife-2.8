@@ -68,3 +68,5 @@
 /* Define it if don't want to use getspnam(3) and friends-- Linux */
 #undef UNUSED_SHADOW
 
+/* Define if you want a global /etc/calife.out script */
+#undef WANT_GLOBAL_RC

@@ -1,3 +1,18 @@
+2004-03-01  Ollivier Robert  <roberto@keltia.freenix.fr>
+
+	* 2.8.6-p1.
+
+	* acconfig.h,config.h.in,configure.in: /etc/calife.out est
+	optionnel et dépend de --enable-global-rc.
+	
+	* calife.c(main): changement de la manière avec laquelle calife
+	détermine qui l'a lancé quand getlogin(3) plante. /etc/calife.out
+	est maintenant optionnel.
+
+	* configure.in: l'édition de liens est maintenant dynamique par
+	défaut sous Linux pour éviter un segfault (interaction avec nss je
+	suppose).
+
 2004-02-27  Ollivier Robert  <roberto@keltia.freenix.fr>
 
 	* 2.8.6.
