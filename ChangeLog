@@ -1,3 +1,12 @@
+2003-11-04  Ollivier Robert  <roberto@keltia.freenix.fr>
+
+	* 2.8.5-p1
+
+	* calife.c: synchro de la liste des signaux à masquer dans les
+	deux cas POSIX et !POSIX. Ajout de SIGTTOU à cette liste pour
+	éviter une « race condition » lors de l'exécution de
+	calife.out. Inspiré par la révision 1.70 de su.c/FreeBSD.
+
 2003-10-04  Ollivier Robert  <roberto@keltia.freenix.fr>
 
 	* 2.8.5.
