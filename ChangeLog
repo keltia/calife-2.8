@@ -1,3 +1,11 @@
+2004-01-23  Ollivier Robert  <roberto@keltia.freenix.fr>
+
+	* 2.8.5-p3.
+
+	* calife.c: utilisation du code de su.c pour identifier le login
+	de l'utilisateur pour corriger les problèmes de getlogin sous
+	Linux.
+
 2004-01-08  Ollivier Robert  <roberto@keltia.freenix.fr>
 
 	* 2.8.5-p2.

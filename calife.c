@@ -205,8 +205,9 @@ main(argc, argv)
     char            * name, * user_to_be, * tty, this_time [30];
     char            * out_rc, * login;
     char            * uargv;
+    uid_t           uid;
     time_t          t;
-    struct passwd * test_user;
+    struct passwd * test_user, *pwd;
 #ifdef HAVE_POSIX_SIGNALS
     sigset_t        old_set, sig_set;
 #endif
@@ -347,8 +348,18 @@ main(argc, argv)
 
     /*
      * get login name the standard way
+     *
+     * Code extracted from usr.bin/su/su.c
      */
-    login = (char *) getlogin ();      
+    uid = getuid();
+    login = getlogin();
+    if (login == NULL || (pwd = getpwnam(login)) == NULL ||
+        pwd->pw_uid != uid)
+        pwd = getpwuid(uid);
+    if (pwd == NULL)
+        die (1, "who are you?");
+    login = strdup (pwd->pw_name);
+
     if (login == NULL || *login == '\0')
     {
     /*
@@ -454,7 +465,7 @@ main(argc, argv)
     /*
      * test if user already root 
      */
-    if (getuid () == 0)
+    if (uid == 0)
     {
         if (!strcmp (user_to_be, ROOT_LOGIN))
             die (0, "Already root.");
