@@ -263,6 +263,12 @@ main(argc, argv)
     (void) signal (SIGQUIT, SIG_IGN);
     (void) signal (SIGINT, SIG_IGN);
     (void) signal (SIGHUP, SIG_IGN);
+    (void) signal (SIGABRT, SIG_IGN);
+    (void) signal (SIGTERM, SIG_IGN);
+    (void) signal (SIGCHLD, SIG_IGN);
+#ifdef SIGTTOU
+    (void) signal (SIGTTOU, SIG_IGN);
+#endif /* SIGTTOU */
 #else /* HAVE_POSIX_SIGNALS */
     sigemptyset (&sig_set);
     sigaddset (&sig_set, SIGQUIT);
@@ -271,6 +277,7 @@ main(argc, argv)
     sigaddset (&sig_set, SIGABRT);
     sigaddset (&sig_set, SIGTERM);
     sigaddset (&sig_set, SIGCHLD);
+    sigaddset (&sig_set, SIGTTOU);
     sigprocmask (SIG_BLOCK, &sig_set, &old_set);
 #endif
 
