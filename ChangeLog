@@ -1,3 +1,11 @@
+2003-10-04  Ollivier Robert  <roberto@keltia.freenix.fr>
+
+	* 2.8.5.
+
+	* configure.in: reconnaissance de MacOS X/Darwin.
+
+	* README: mise à jour.
+
 2003-07-28  Ollivier Robert  <roberto@caerdonn.eurocontrol.fr>
 
 	* 2.8.4-p8.
