@@ -350,18 +350,29 @@ main(argc, argv)
     }
 
     /*
-     * get login name the standard way
+     * Get login name the standard way
      *
      * Code extracted from usr.bin/su/su.c
+     * heavily modified.
      */
     uid = getuid();
+    MESSAGE_1("Real uid = %ld\n", uid);
     login = getlogin();
-    if (login == NULL || (pwd = getpwnam(login)) == NULL ||
-        pwd->pw_uid != uid)
+    if (login == NULL)
+    {
         pwd = getpwuid(uid);
+        MESSAGE_2 ("getpwuid uid = %ld login = %s\n", uid, pwd->pw_name);
+    }
+    else
+    {
+        pwd = getpwnam(login);
+        MESSAGE_1 ("getlogin = %s\n", login);
+    }
     if (pwd == NULL)
         die (1, "who are you?");
     login = strdup (pwd->pw_name);
+
+    MESSAGE_2 ("uid = %ld name = %s\n", uid, login);
 
     if (login == NULL || *login == '\0')
     {

@@ -163,7 +163,7 @@ verify_auth_info (name, user_to_be)
         if (*ptr == '\0')
             custom_shell = 0;
 
-        MESSAGE_1 ("Current line_name = |%s|\n", line_name);
+        MESSAGE_2 ("Current line_name = |%s| / name = |%s|\n", line_name,name);
 
         if (strcmp (line_name, name))   /* not us */
             continue;
