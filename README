@@ -191,8 +191,8 @@ ayant changé par rapport à Jaguar.
 Le support de  NIS a disparu dans les  versions 2.6.5 et suivantes mais sera
 réintégré sous peu.
 
-La fonctionnalité syslog(3) est maintenant obligatoire pour compiler calife. Ca simplifie
-le code manière significative.
+La fonctionnalité syslog(3) est maintenant obligatoire pour compiler calife.
+Ca simplifie le code manière significative.
 
 Des packages FreeBSD et Debian existent dorénavant grâce à Thomas Quinot.
 Alain Thivillon a généré des packages Red-hat (RPM) pour 2.8.4b.
@@ -235,7 +235,7 @@ René Cougnenc
 François Berjon         <fcb@gwynedd.frmug.org>
 Laurent Chemla          <laurent@brainstorm.fr>
 Pierre Beyssac          <pb@fasterix.frmug.org>
-Nathanaël Makarévitch	<nat@nataa.frmug.org>
+Nathanaël Makarévitch	  <nat@nataa.frmug.org>
 Thomas Quinot           <thomas@cuivre.fr.eu.org>
 Christian Perrier       <bubulle@kheops.frmug.org>
 Philippe Regnault       <regnauld@starbsd.org>

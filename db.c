@@ -100,12 +100,12 @@ verify_auth_info (name, user_to_be)
 #endif
 {
     int     allowed = 0, do_tok = 1;
-    char    * * user_list = NULL;
+    char    ** user_list = NULL;
     size_t  l_line = 0;
     int     nb_users = 0;
     char    * line, * ptr;
     char    * line_name, * line_shell;
-    char    * group_name = NULL, *group, **p;
+    char    * group_name = NULL, * group = NULL, **p;
     struct group *gr_group;
     
     /*
@@ -419,7 +419,7 @@ verify_password (name, user_to_be, this_time, tty)
     {
         char    got_pass = 0;
         char    * pt_pass, * pt_enc, 
-                * user_pass, * enc_pass, salt [10];
+                * user_pass = NULL, * enc_pass = NULL, salt [10];
 
         user_pass = (char *) xalloc (l_size);
         enc_pass = (char *) xalloc (l_size);

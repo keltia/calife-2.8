@@ -1,4 +1,4 @@
-.\" Copyright (c) 1991, 1994 Ollivier Robert
+.\" Copyright (c) 1991-2005 Ollivier Robert
 .\" All rights reserved.
 .\"
 .\" Redistribution and use in source and binary forms, with or without
@@ -82,6 +82,7 @@ is placed in
 fcb
 roberto:/bin/tcsh
 pb::guest,blaireau
+@staff:
 .Ed
 .Sh SEE ALSO
 .Xr calife 1 ,
@@ -90,7 +91,7 @@ pb::guest,blaireau
 A
 .Nm
 file format appeared in DG/UX and SunOS, written for Antenne 2 in 1991. It
-has evolved with the extra shell specification. The login list was
-reintroduced in 2.7.
+has evolved with the extra shell specification.  The login list was
+reintroduced in 2.7.  The @group feature was introduced during the 2.8 cycle.
 .Sh AUTHOR
-Ollivier Robert <roberto@keltia.frmug.fr.net>
+Ollivier Robert <roberto@keltia.freenix.fr>
