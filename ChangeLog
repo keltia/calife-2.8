@@ -1,10 +1,24 @@
 2005-06-10  Ollivier Robert  <roberto@keltia.freenix.fr>
 
-  * 2.8.6-p3
+    * 2.8.6-p5
+    
+    * Makefile.in: calife.auth-dist est installé même si le vrai fichier 
+    existe (branche calife-pam--3.0)
+    
+2005-06-10  Ollivier Robert  <roberto@keltia.freenix.fr>
+
+	* 2.8.6-p4
   
-  * db.c: Force l'initialisation de plusieurs variables pointant sur de la
-  mémoire allouée par malloc(3). Ca évite un segfault lors du free(3) sur
-  Solaris et Gentoo (Denis Ducamp <Denis.Ducamp@groar.org>).
+	* calife.c: correction de la manière dont sont vérifiés les caractères
+	valides dans un nom d'utilisateur (branche calife--pam--3.0).
+	
+2005-06-10  Ollivier Robert  <roberto@keltia.freenix.fr>
+
+	* 2.8.6-p3
+  
+	* db.c: Force l'initialisation de plusieurs variables pointant sur de la
+	mémoire allouée par malloc(3). Ca évite un segfault lors du free(3) sur
+	Solaris et Gentoo (Denis Ducamp <Denis.Ducamp@groar.org>).
   
 2004-10-31  Ollivier Robert  <roberto@keltia.freenix.fr>
 

@@ -119,6 +119,16 @@
 #define MAXLOGNAME  16
 #endif
 
+#define ACCEPT_ALPHAL   "abcdefghijklmnopqrstuvwxyz"
+#define ACCEPT_ALPHAU   "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+#define ACCEPT_NUM      "0123456789"
+#define ACCEPT_PUNCT    "-_"
+ 
+#define ACCEPT_CHARS    ACCEPT_ALPHAL \
+                        ACCEPT_ALPHAU \
+                        ACCEPT_NUM \
+                        ACCEPT_PUNCT
+
 #ifdef STDC_HEADERS
   int open_databases (void);
   void verify_password (char *, char *, char *, char *);
